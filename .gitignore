@@ -1,0 +1,40 @@
+# === Dipendenze ===
+node_modules/
+
+# === Segreti / variabili d'ambiente (MAI committare) ===
+.env
+.env.local
+.env.*.local
+*.env
+!.env.example
+
+# === Output generati dei corsi (DOCX/XLSX) ===
+Corsi Generati/**/*.docx
+Corsi Generati/**/*.xlsx
+
+# === Binari / file pesanti sorgente (condividere fuori dal repo) ===
+*.zip
+*.pdf
+*.ppt
+*.pptx
+
+# === Dump dati grandi del DB (condividere a parte / Git LFS) ===
+db/**/*.csv
+
+# === File di lavoro temporanei ===
+**/_*.py
+**/_*.txt
+**/_*.html
+**/_*.pkl
+**/_*.sql
+**/_*.json
+_*.sql
+_*.json
+db/dbSim/_*
+**/output/
+
+# === OS / editor ===
+.DS_Store
+Thumbs.db
+.vscode/
+*.log

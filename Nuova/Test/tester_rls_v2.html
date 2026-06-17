@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tester RLS v2 — Generatore Lezioni</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --surface2: #f9f8f5;
+    --border: #e2e0d8;
+    --border2: #ccc9be;
+    --text: #1a1916;
+    --text2: #6b6860;
+    --text3: #9b9890;
+    --green: #2d7a4f;
+    --green-bg: #edf7f1;
+    --amber: #92580a;
+    --amber-bg: #fef6e4;
+    --red: #c0392b;
+    --red-bg: #fdf0ee;
+    --blue: #1a5fa8;
+    --blue-bg: #eef4fc;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  header h1 { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+  header p { font-size: 12px; color: var(--text2); margin-top: 2px; }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .badge-green { background: var(--green-bg); color: var(--green); }
+  .badge-amber { background: var(--amber-bg); color: var(--amber); }
+  .badge-red { background: var(--red-bg); color: var(--red); }
+  .badge-blue { background: var(--blue-bg); color: var(--blue); }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 0;
+    min-height: calc(100vh - 57px);
+  }
+
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 20px;
+    overflow-y: auto;
+    height: calc(100vh - 57px);
+    position: sticky;
+    top: 57px;
+  }
+
+  .main {
+    padding: 24px;
+    overflow-y: auto;
+  }
+
+  .field { margin-bottom: 16px; }
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text2);
+    margin-bottom: 6px;
+  }
+
+  input[type="password"], input[type="text"], select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface2);
+    color: var(--text);
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input:focus, select:focus { border-color: var(--border2); }
+
+  textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface2);
+    color: var(--text);
+    font-size: 12px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    line-height: 1.6;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  textarea:focus { border-color: var(--border2); }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 16px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+  }
+  .btn:hover { background: var(--bg); border-color: var(--border2); }
+  .btn:active { transform: scale(0.98); }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+  .btn-primary {
+    background: var(--text);
+    color: #fff;
+    border-color: var(--text);
+  }
+  .btn-primary:hover { background: #333; border-color: #333; }
+  .btn-full { width: 100%; justify-content: center; }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 16px 0;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 2px;
+    background: var(--bg);
+    border-radius: var(--radius);
+    padding: 3px;
+    margin-bottom: 20px;
+  }
+  .tab {
+    flex: 1;
+    padding: 7px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: var(--text2);
+    transition: all 0.15s;
+    text-align: center;
+  }
+  .tab.active {
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .metric {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+  }
+  .metric-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text3); margin-bottom: 4px; }
+  .metric-value { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; color: var(--text); }
+  .metric-value.ok { color: var(--green); }
+  .metric-value.warn { color: var(--amber); }
+  .metric-value.bad { color: var(--red); }
+
+  .status-bar {
+    font-size: 12px;
+    color: var(--text2);
+    padding: 8px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 12px;
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .spinner {
+    width: 14px; height: 14px;
+    border: 2px solid var(--border2);
+    border-top-color: var(--text);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+    display: none;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .output {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px 24px;
+    white-space: pre-wrap;
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--text);
+    min-height: 200px;
+    display: none;
+  }
+
+  .info-box {
+    background: var(--blue-bg);
+    border: 1px solid #c5d9f0;
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--blue);
+    margin-bottom: 14px;
+  }
+
+  .warn-box {
+    background: var(--amber-bg);
+    border: 1px solid #f0d89a;
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--amber);
+    margin-bottom: 14px;
+  }
+
+  .section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .copy-btn {
+    font-size: 11px;
+    padding: 3px 8px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    background: var(--surface);
+    cursor: pointer;
+    color: var(--text2);
+    margin-left: 8px;
+    transition: all 0.1s;
+  }
+  .copy-btn:hover { background: var(--bg); }
+
+  .token-info {
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 6px;
+  }
+
+  .change-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 16px; }
+  .change-table th { text-align: left; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text3); padding: 6px 8px; border-bottom: 1px solid var(--border); }
+  .change-table td { padding: 7px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .old { color: var(--red); text-decoration: line-through; font-family: monospace; }
+  .new { color: var(--green); font-family: monospace; font-weight: 600; }
+
+  @media (max-width: 768px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
+    .metrics { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Tester RLS v2 — Generatore Lezioni</h1>
+    <p>Test prompt ottimizzato · max_tokens corretti · diagnostica stop_reason</p>
+  </div>
+  <span class="badge badge-blue">v2 · 20 mag 2026</span>
+</header>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="field">
+      <label>API Key Anthropic</label>
+      <input type="password" id="api-key" placeholder="sk-ant-..." />
+      <p class="token-info">Non viene salvata. Solo per questa sessione.</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="field">
+      <label>Modalità</label>
+      <select id="mode" onchange="updateMode()">
+        <option value="lezione">Lezione corso</option>
+        <option value="avatar">Script avatar</option>
+      </select>
+    </div>
+
+    <div id="token-info-lezione">
+      <div class="info-box">
+        max_tokens: <strong>3.000</strong><br>
+        Target: testo libero, almeno 6 frasi/sezione<br>
+        Costo stimato: ~$0.027
+      </div>
+    </div>
+    <div id="token-info-avatar" style="display:none">
+      <div class="warn-box">
+        max_tokens: <strong>4.000</strong><br>
+        Target: 2.400-3.000 parole · 8-10 min<br>
+        Costo stimato: ~$0.051
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <p class="section-title">Modifiche v2</p>
+    <table class="change-table">
+      <thead><tr><th>Parametro</th><th>Prima</th><th>Dopo</th></tr></thead>
+      <tbody>
+        <tr><td>max_tokens lezione</td><td class="old">1000</td><td class="new">3000</td></tr>
+        <tr><td>max_tokens avatar</td><td class="old">1000</td><td class="new">4000</td></tr>
+        <tr><td>Target parole</td><td class="old">"700-900"</td><td class="new">rimosso</td></tr>
+        <tr><td>Frasi per sezione</td><td class="old">"4-6"</td><td class="new">"≥6"</td></tr>
+        <tr><td>Frasi intro</td><td class="old">"3-4"</td><td class="new">"≥4-6"</td></tr>
+        <tr><td>Struttura avatar</td><td class="old">3 blocchi</td><td class="new">6 blocchi</td></tr>
+      </tbody>
+    </table>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('prompt')">System prompt</button>
+      <button class="tab" onclick="switchTab('context')">Contesto L01</button>
+      <button class="tab" onclick="switchTab('output')">Output</button>
+    </div>
+
+    <!-- TAB PROMPT -->
+    <div id="tab-prompt" class="tab-content active">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+        <p class="section-title" style="margin:0; border:none; padding:0">System prompt</p>
+        <button class="copy-btn" onclick="copyEl('system-prompt')">copia</button>
+      </div>
+      <textarea id="system-prompt" rows="30">Sei un esperto di formazione sulla sicurezza sul lavoro (D.Lgs. 81/08). Genera il testo completo di una lezione per il Corso di Aggiornamento RLS.
+
+STRUTTURA OBBLIGATORIA (rispetta esattamente questo ordine e questi titoli):
+
+## INTRODUZIONE
+Scrivi almeno 4-6 frasi discorsive che introducono l'argomento. Tono professionale ma accessibile. Non usare elenchi.
+
+## IN QUESTA LEZIONE APPRENDERAI
+- [verbo infinito] [obiettivo 1]
+- [verbo infinito] [obiettivo 2]
+- [verbo infinito] [obiettivo 3]
+- [verbo infinito] [obiettivo 4]
+
+## 💡 PILLOLA INFORMATIVA
+Una frase di massimo 20 parole con un dato o concetto chiave memorabile.
+
+## [TITOLO SEZIONE 1]
+Almeno 6 frasi discorsive. Nessun elenco puntato. Cita gli articoli del D.Lgs. 81/08 pertinenti in forma estesa quando disponibili nel materiale fornito.
+
+## [TITOLO SEZIONE 2]
+Almeno 6 frasi discorsive. Stessa regola: no elenchi, cita articoli.
+
+## [TITOLO SEZIONE 3]
+Almeno 6 frasi discorsive.
+
+## [TITOLO SEZIONE 4]
+Almeno 6 frasi discorsive.
+
+## RIEPILOGO
+Scrivi almeno 4 frasi che sintetizzano i concetti principali della lezione. Chiudi con una frase che motiva il discente.
+
+REGOLE DI STILE:
+- Usa sempre il "tu" rivolto al discente
+- Cita articoli di legge in forma estesa: "l'Art. 47 del D.Lgs. 81/08 stabilisce che..."
+- Non usare mai elenchi puntati nelle sezioni e nel riepilogo
+- Ogni sezione deve avere un titolo descrittivo tra ## (non "Sezione 1", "Sezione 2" ecc.)
+- Tono: professionale, chiaro, diretto
+- Espandi ogni concetto con contesto, implicazioni pratiche e riferimenti normativi</textarea>
+
+      <div id="system-prompt-avatar" style="display:none">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:16px; margin-bottom:8px;">
+          <p class="section-title" style="margin:0; border:none; padding:0">System prompt avatar</p>
+          <button class="copy-btn" onclick="copyEl('sp-avatar')">copia</button>
+        </div>
+        <textarea id="sp-avatar" rows="30">Sei una formatrice esperta di sicurezza sul lavoro che registra una videolezione per HeyGen. Tono professionale, caldo, diretto — come se parlassi con un collega RLS preparato. Parla in prima persona plurale ("noi formatori", "voi RLS").
+
+OBIETTIVO: Script discorsivo da 2.400 a 3.000 parole per essere letto ad alta voce a 300 parole/min (8-10 minuti di video).
+
+STRUTTURA OBBLIGATORIA — rispetta ordine, titoli e quote minime:
+
+## APERTURA (almeno 200 parole)
+Apri con una domanda o uno scenario che aggancia il RLS. Contestualizza perché questo argomento è importante nella pratica quotidiana. Termina con una transizione naturale verso i contenuti.
+
+## QUADRO NORMATIVO (almeno 600 parole)
+Esplora ogni articolo del D.Lgs. 81/08 fornito: cosa stabilisce, cosa cambia rispetto a una lettura superficiale, quali obblighi concreti genera, quali sanzioni prevede. Non limitarti a citare: spiega il significato pratico. Per ogni articolo scrivi almeno 3-4 frasi di analisi.
+
+## IMPLICAZIONI PRATICHE (almeno 400 parole)
+Concretizza: cosa deve fare, sapere o chiedere il RLS? Situazioni tipiche, errori frequenti delle aziende, buone prassi che un RLS attento può promuovere.
+
+## ESEMPI ILLUSTRATIVI (almeno 500 parole)
+Scrivi 2 esempi narrativi separati. Ogni esempio: contesto aziendale, protagonista, problema, intervento RLS, esito. Marca con [ESEMPIO ILLUSTRATIVO] prima del titolo. Scenari plausibili, non riferiti ad aziende reali.
+
+## APPROFONDIMENTO (almeno 400 parole)
+Origine storica della norma, recepimento direttiva europea, dati INAIL pertinenti (usa dati reali se nel materiale, altrimenti indica [DATO DA VERIFICARE]), evoluzione recente. Trasforma la lezione da riepilogo normativo a contenuto formativo di qualità.
+
+## CHIUSURA (almeno 200 parole)
+Riepilogo discorsivo dei concetti chiave. Chiudi con un invito all'azione specifico per il RLS — qualcosa che può fare entro la settimana nella propria azienda. Richiama il tema dell'apertura.
+
+REGOLE DI STILE:
+- Tono parlato: frasi medio-brevi, transizioni naturali ("Passiamo ora a...", "Un aspetto che spesso sfugge è...")
+- Nessun elenco puntato: tutto in prosa discorsiva
+- Cita gli articoli in forma estesa: "l'Art. 47 del D.Lgs. 81/08 attribuisce al RLS il diritto di..."
+- Indica con [PAUSA] i momenti di pausa drammatica (massimo 3 per script)
+- Se arrivi alla fine e hai meno di 2.400 parole, espandi "Quadro normativo" e "Approfondimento"</textarea>
+      </div>
+    </div>
+
+    <!-- TAB CONTEXT -->
+    <div id="tab-context" class="tab-content">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+        <p class="section-title" style="margin:0; border:none; padding:0">Contesto user — L01</p>
+        <button class="copy-btn" onclick="copyEl('user-context')">copia</button>
+      </div>
+      <textarea id="user-context" rows="32">LEZIONE: L01 — Soggetti del sistema SSL — Parte 1
+CORSO: Aggiornamento RLS | DESTINATARI: RLS già formati, aggiornamento annuale/biennale
+
+MATERIALE FONTE (F3, slide 3-15):
+- Sistema SSL: più soggetti con ruoli distinti — DL, RSPP, MC, RLS, Lavoratori
+- Datore di Lavoro: responsabilità primaria non delegabile — DVR e designazione RSPP (Art. 17)
+- RSPP: interno o esterno, requisiti formativi specifici per settore e dimensione aziendale
+- Medico Competente: obbligatorio per lavoro notturno, agenti chimici, VDT >20h/settimana
+- RLS: 32 ore formazione iniziale + 8 ore/anno aggiornamento obbligatorio
+- Riunione periodica (Art. 35): obbligatoria >15 lavoratori, almeno 1 volta/anno
+
+ARTICOLI D.LGS. 81/08 PERTINENTI:
+Art. 2 — Definizioni: datore di lavoro, lavoratore, RLS, RSPP, medico competente
+Art. 17 — Obblighi non delegabili del datore di lavoro (DVR, designazione RSPP)
+Art. 18 — Obblighi del datore di lavoro e del dirigente
+Art. 47 — Il rappresentante dei lavoratori per la sicurezza (elezione, numero)
+Art. 50 — Attribuzioni del RLS (accesso luoghi, consultazione, proposte)
+Art. 35 — Riunione periodica (obbligo >15 dipendenti, ordine del giorno)
+
+MATERIALE AGGIUNTIVO (rls.ppt):
+- Definizione OMS salute: benessere fisico, mentale e sociale
+- Distinzione infortunio/malattia professionale
+- Il RLS come "antenna" del sistema: raccoglie segnalazioni, le porta al SPP
+
+Genera la lezione completa seguendo la struttura.</textarea>
+
+      <div id="user-context-avatar" style="display:none">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:16px; margin-bottom:8px;">
+          <p class="section-title" style="margin:0; border:none; padding:0">Contesto user avatar — L01</p>
+          <button class="copy-btn" onclick="copyEl('uc-avatar')">copia</button>
+        </div>
+        <textarea id="uc-avatar" rows="32">SCRIPT AVATAR — L01: Soggetti del sistema SSL — Parte 1
+CORSO: Aggiornamento RLS | TARGET: 2.400-3.000 parole (8-10 minuti)
+
+MATERIALE FONTE — SLIDE (F3, slide 3-15):
+- Sistema SSL: più soggetti con ruoli distinti — DL, RSPP, MC, RLS, Lavoratori
+- Datore di Lavoro: responsabilità primaria non delegabile — DVR e designazione RSPP
+- RSPP: interno o esterno, requisiti formativi specifici per settore e dimensione
+- Medico Competente: obbligatorio per lavoro notturno, agenti chimici, VDT >20h/sett.
+- RLS: 32 ore formazione iniziale + 8 ore/anno aggiornamento obbligatorio
+- Riunione periodica Art. 35: obbligatoria >15 lavoratori, almeno 1/anno
+- Il RLS ha accesso a tutti i luoghi di lavoro e ai documenti aziendali SSL
+- Consultazione preventiva: il DL deve consultare il RLS prima di ogni decisione rilevante
+
+ARTICOLI D.LGS. 81/08 — TESTO COMPLETO:
+
+Art. 2 (Definizioni): "datore di lavoro" = soggetto titolare del rapporto di lavoro o con responsabilità dell'impresa; "RLS" = persona eletta o designata per rappresentare i lavoratori in materia di SSL; "RSPP" = persona designata dal DL per coordinare il servizio di prevenzione e protezione.
+
+Art. 17 (Obblighi non delegabili): il DL non può delegare: a) valutazione di tutti i rischi e elaborazione DVR; b) designazione RSPP. Rimangono in capo al DL anche in presenza di deleghe.
+
+Art. 18 (Obblighi DL e dirigente): nominare MC nei casi previsti; designare addetti PS e prevenzione incendi; aggiornare misure di prevenzione; fornire DPI adeguati; vigilare sull'osservanza degli obblighi.
+
+Art. 47 (RLS): istituito a livello aziendale, territoriale, di comparto o nazionale. Aziende >15 dipendenti: eletto dai lavoratori. Numero: 1 (fino a 200 lav.), 3 (201-1000), 6 (>1000).
+
+Art. 50 (Attribuzioni RLS): accede ai luoghi di lavoro; è consultato su valutazione rischi, designazione RSPP e MC, organizzazione formazione; riceve informazioni dai servizi di vigilanza; promuove misure di prevenzione; avverte il responsabile sui rischi; può fare ricorso alle autorità se ritiene le misure insufficienti.
+
+Art. 35 (Riunione periodica): aziende >15 lavoratori — almeno 1 riunione/anno con RSPP, MC e RLS. Oggetto: DVR, andamento infortuni/malattie professionali, criteri DPI, programmi di formazione. Verbale a disposizione dei partecipanti.
+
+MATERIALE AGGIUNTIVO:
+- OMS: salute = benessere fisico, mentale e sociale
+- Infortunio vs malattia professionale: evento improvviso vs esposizione prolungata
+- RLS come "sensore del sistema": raccoglie segnalazioni informali, le porta al SPP
+- INAIL: circa 600.000 infortuni/anno in Italia, ~1.000 mortali (dato 2024)
+
+Genera lo script avatar completo. Controlla che superi 2.400 parole prima di concludere.</textarea>
+      </div>
+    </div>
+
+    <!-- TAB OUTPUT -->
+    <div id="tab-output" class="tab-content">
+      <div class="metrics" id="metrics" style="display:none">
+        <div class="metric">
+          <div class="metric-label">Parole</div>
+          <div class="metric-value" id="m-words">—</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Min. HeyGen</div>
+          <div class="metric-value" id="m-mins">—</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Sezioni ##</div>
+          <div class="metric-value" id="m-secs">—</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Stop reason</div>
+          <div class="metric-value" style="font-size:14px" id="m-stop">—</div>
+        </div>
+      </div>
+
+      <div class="status-bar">
+        <div class="spinner" id="spinner"></div>
+        <span id="status-text">Inserisci la API key e clicca Genera.</span>
+      </div>
+
+      <div style="display:flex; gap:8px; margin-bottom:16px;">
+        <button class="btn btn-primary btn-full" id="gen-btn" onclick="generate()">
+          ▶ Genera L01
+        </button>
+        <button class="btn" id="copy-output-btn" onclick="copyOutput()" style="display:none">
+          Copia testo
+        </button>
+        <button class="btn" id="dl-btn" onclick="downloadOutput()" style="display:none">
+          Scarica .txt
+        </button>
+      </div>
+
+      <div class="output" id="output"></div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  const MODELS = { lezione: 3000, avatar: 4000 };
+
+  function switchTab(name) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.querySelector(`[onclick="switchTab('${name}')"]`).classList.add('active');
+    document.getElementById('tab-' + name).classList.add('active');
+  }
+
+  function updateMode() {
+    const mode = document.getElementById('mode').value;
+    const isAvatar = mode === 'avatar';
+    document.getElementById('token-info-lezione').style.display = isAvatar ? 'none' : 'block';
+    document.getElementById('token-info-avatar').style.display = isAvatar ? 'block' : 'none';
+    document.getElementById('system-prompt-avatar').style.display = isAvatar ? 'block' : 'none';
+    document.getElementById('user-context-avatar').style.display = isAvatar ? 'block' : 'none';
+    document.getElementById('gen-btn').textContent = isAvatar ? '▶ Genera script avatar L01' : '▶ Genera L01';
+    document.getElementById('m-mins').parentElement.style.display = isAvatar ? 'block' : 'block';
+  }
+
+  function copyEl(id) {
+    navigator.clipboard.writeText(document.getElementById(id).value)
+      .then(() => { /* ok */ })
+      .catch(() => { alert('Copia manuale: Ctrl+A, Ctrl+C nel campo testo.'); });
+  }
+
+  function copyOutput() {
+    const text = document.getElementById('output').textContent;
+    navigator.clipboard.writeText(text).catch(() => {});
+  }
+
+  function downloadOutput() {
+    const text = document.getElementById('output').textContent;
+    const mode = document.getElementById('mode').value;
+    const fname = mode === 'avatar' ? 'L01_script_avatar.txt' : 'L01_lezione.txt';
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = fname;
+    a.click();
+  }
+
+  function wordCount(t) { return t.trim().split(/\s+/).filter(x => x.length > 0).length; }
+  function sectionCount(t) { return (t.match(/^## /mg) || []).length; }
+
+  function showMetrics(text, stopReason) {
+    const w = wordCount(text);
+    const mins = (w / 300).toFixed(1);
+    const secs = sectionCount(text);
+    const mode = document.getElementById('mode').value;
+
+    document.getElementById('metrics').style.display = 'grid';
+
+    const mw = document.getElementById('m-words');
+    mw.textContent = w.toLocaleString('it');
+    if (mode === 'avatar') {
+      mw.className = 'metric-value ' + (w >= 2400 ? 'ok' : w >= 1600 ? 'warn' : 'bad');
+    } else {
+      mw.className = 'metric-value ' + (w >= 900 ? 'ok' : w >= 600 ? 'warn' : 'bad');
+    }
+
+    const mm = document.getElementById('m-mins');
+    mm.textContent = mins + ' min';
+    mm.className = 'metric-value ' + (mode === 'avatar'
+      ? (parseFloat(mins) >= 8 ? 'ok' : parseFloat(mins) >= 5 ? 'warn' : 'bad')
+      : 'metric-value');
+
+    document.getElementById('m-secs').textContent = secs;
+
+    const ms = document.getElementById('m-stop');
+    ms.textContent = stopReason;
+    ms.className = 'metric-value ' + (stopReason === 'end_turn' ? 'ok' : 'bad');
+  }
+
+  async function generate() {
+    const apiKey = document.getElementById('api-key').value.trim();
+    if (!apiKey) { alert('Inserisci la API key Anthropic prima di generare.'); return; }
+
+    const mode = document.getElementById('mode').value;
+    const isAvatar = mode === 'avatar';
+
+    const systemPrompt = isAvatar
+      ? document.getElementById('sp-avatar').value
+      : document.getElementById('system-prompt').value;
+    const userContext = isAvatar
+      ? document.getElementById('uc-avatar').value
+      : document.getElementById('user-context').value;
+    const maxTokens = MODELS[mode];
+
+    const btn = document.getElementById('gen-btn');
+    const spinner = document.getElementById('spinner');
+    const status = document.getElementById('status-text');
+    const output = document.getElementById('output');
+
+    btn.disabled = true;
+    btn.textContent = 'Generazione in corso…';
+    spinner.style.display = 'block';
+    status.textContent = `Chiamata API — max_tokens: ${maxTokens} — modello: claude-sonnet-4-20250514`;
+    output.style.display = 'block';
+    output.textContent = '';
+    document.getElementById('copy-output-btn').style.display = 'none';
+    document.getElementById('dl-btn').style.display = 'none';
+    switchTab('output');
+
+    try {
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: maxTokens,
+          system: systemPrompt,
+          messages: [{ role: 'user', content: userContext }]
+        })
+      });
+
+      const data = await resp.json();
+
+      if (data.error) {
+        output.textContent = 'Errore API:\n' + JSON.stringify(data.error, null, 2);
+        status.textContent = 'Errore API — controlla la API key e i crediti.';
+        return;
+      }
+
+      const text = data.content.map(b => b.text || '').join('');
+      output.textContent = text;
+
+      const stopReason = data.stop_reason || '?';
+      showMetrics(text, stopReason);
+
+      const inputTok = data.usage?.input_tokens || '?';
+      const outputTok = data.usage?.output_tokens || '?';
+      const cost = (((inputTok / 1000000) * 3) + ((outputTok / 1000000) * 15)).toFixed(4);
+      status.textContent = `Completato ✓ — input: ${inputTok} tok · output: ${outputTok} tok · costo: ~$${cost}`;
+
+      document.getElementById('copy-output-btn').style.display = 'inline-flex';
+      document.getElementById('dl-btn').style.display = 'inline-flex';
+
+    } catch (e) {
+      output.textContent = 'Errore di rete:\n' + e.message;
+      status.textContent = 'Errore. Controlla la connessione.';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = isAvatar ? '↺ Rigenera script avatar' : '↺ Rigenera L01';
+      spinner.style.display = 'none';
+    }
+  }
+</script>
+
+</body>
+</html>
