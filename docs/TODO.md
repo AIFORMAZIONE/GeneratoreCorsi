@@ -77,11 +77,14 @@ aiformazione/                         (repo GitHub — nome da confermare)
 
 > Da fare in coppia in una sola sessione: dopo questa, si lavora in parallelo senza toccarsi.
 
-- [ ] **[A]** Creare repo GitHub `aiformazione`, push del codice esistente (`Agente_Corsi/`, `src/`, `docs/`), `.gitignore` (node_modules, .env, *.docx/xlsx generati), `README.md`. Branch protetto su `main` (no push diretto).
-- [ ] **[A+B]** Definire e **CONGELARE** `contracts.js` — le interfacce dati tra agenti (vedi §Contratti sotto). Niente codice parte prima che questo sia approvato da entrambi.
-- [ ] **[A]** Creare lo **scaffold**: cartelle `agenti/`, `integrazioni/`, `src/components/`, con file **stub vuoti** (solo `export` placeholder) per ogni agente → così ogni owner ha già il suo file e i confini esistono.
-- [ ] **[A+B]** Copiare `CLAUDE_CODE_COLLABORATION.md` nel repo e compilare la tabella "Chi sta facendo cosa".
+- [x] **[A]** Repo GitHub creato e pubblicato: **https://github.com/AIFORMAZIONE/GeneratoreCorsi** (con `.gitignore`, `README.md`). _TODO: branch protetto su `main` da Settings → Branches._
+- [x] **[A]** **Bozza** `contracts.js` creata (`Nuova/Agente_Corsi/contracts.js`). **DA APPROVARE/CONGELARE insieme** prima di scrivere gli agenti.
+- [x] **[A]** **Scaffold** creato: `Nuova/Agente_Corsi/agenti/` (7 stub) + `Nuova/Agente_Corsi/integrazioni/` (3 stub) + `orchestratore.js`. Ogni file ha già il suo owner nell'intestazione.
+- [x] **[A+B]** `CLAUDE_CODE_COLLABORATION.md` nel repo (radice).
 - [ ] **[B]** Verificare accesso alle API esterne: HeyGen (key), LearnWorlds (import/API), credenziali social.
+- [ ] **[A+B]** Rivedere e **congelare** `contracts.js` (ok di entrambi) → poi via libera alle Milestone.
+
+> ⚠️ **Path reale del codice:** nel repo gli agenti stanno sotto **`Nuova/Agente_Corsi/`** (non `Agente_Corsi/` come nello schema idealizzato sopra). I percorsi nelle task vanno letti con questo prefisso. `src/` (frontend) **non è in questo repo**: vive nel repo Vercel separato `generatore-corsi` → le task frontend di B si fanno lì.
 
 ---
 
@@ -158,10 +161,11 @@ Validaz.  = { argomento_id, troncato, coerente, esito }
 
 | Task | Owner | Branch | File | Stato | Fine |
 |------|-------|--------|------|-------|------|
-| Setup repo + scaffold | A | `chore/setup-repo` | repo, stub | Da iniziare | — |
-| Contratti dati | A+B | `chore/contracts` | `contracts.js` | Da iniziare | — |
-| Agente Generazione | A | `feature/agente-generazione` | `agente_generazione.js` | Da iniziare | — |
-| Agente Copione | B | `feature/agente-copione` | `agente_copione.js` | Da iniziare | — |
+| Setup repo + scaffold | A | (su main) | repo, stub | ✅ Fatto | 17/06 |
+| Contratti dati (bozza) | A | (su main) | `contracts.js` | ✅ Bozza — da congelare insieme | 17/06 |
+| Verifica API esterne | B | — | HeyGen/LW/social | Da iniziare | — |
+| Agente Generazione | A | `feature/agente-generazione` | `agenti/agente_generazione.js` | Da iniziare | — |
+| Agente Copione | B | `feature/agente-copione` | `agenti/agente_copione.js` | Da iniziare | — |
 
 ---
 
